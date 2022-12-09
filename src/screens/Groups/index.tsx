@@ -1,3 +1,4 @@
+import GroupCard from "@components/GroupCard";
 import Header from "@components/Header";
 import HighLight from "@components/HighLight";
 import React from "react";
@@ -7,7 +8,13 @@ const Groups: React.FC = () => {
   return (
     <Container>
       <Header showBackButton />
-      <HighLight title="Grupos" subtitle="Crie ou entre em um grupo" />
+      <HighLight title="Turmas" subtitle="Jogue com sua turma" />
+      <GroupCard
+        title="Turma 1"
+        onPress={() => {
+          alert("Turma 1");
+        }}
+      />
     </Container>
   );
 };
