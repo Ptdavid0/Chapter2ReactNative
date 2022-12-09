@@ -1,10 +1,11 @@
 import React from "react";
-import { Container, Title } from "./styles";
+import { Text } from "react-native";
+import { Container } from "./styles";
 
 const Groups: React.FC = () => {
   return (
     <Container>
-      <Title>Groups</Title>
+      <Text>Groups</Text>
     </Container>
   );
 };
