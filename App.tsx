@@ -1,5 +1,7 @@
 import { StatusBar } from "react-native";
 import Groups from "@screens/Groups";
+import NewGroup from "@screens/NewGroup";
+import Players from "@screens/Players";
 import { ThemeProvider } from "styled-components";
 import theme from "@theme/index";
 import {
@@ -8,7 +10,6 @@ import {
   Roboto_700Bold,
 } from "@expo-google-fonts/roboto";
 import Loading from "@components/Loading";
-import NewGroup from "@screens/NewGroup";
 
 const App: React.FC = () => {
   const [fontsLoaded] = useFonts({
@@ -23,7 +24,7 @@ const App: React.FC = () => {
         backgroundColor="translucent"
         translucent
       />
-      {fontsLoaded ? <NewGroup /> : <Loading />}
+      {fontsLoaded ? <Players /> : <Loading />}
     </ThemeProvider>
   );
 };
