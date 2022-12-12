@@ -17,7 +17,7 @@ const NewGroup: React.FC = () => {
           subtitle="Crie a turma para adicionar as pessoas"
         />
 
-        <Input />
+        <Input placeholder="Nome da Turma" />
 
         <Button
           title="Criar"
