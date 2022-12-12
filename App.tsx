@@ -8,6 +8,7 @@ import {
   Roboto_700Bold,
 } from "@expo-google-fonts/roboto";
 import Loading from "@components/Loading";
+import NewGroup from "@screens/NewGroup";
 
 const App: React.FC = () => {
   const [fontsLoaded] = useFonts({
@@ -22,7 +23,7 @@ const App: React.FC = () => {
         backgroundColor="translucent"
         translucent
       />
-      {fontsLoaded ? <Groups /> : <Loading />}
+      {fontsLoaded ? <NewGroup /> : <Loading />}
     </ThemeProvider>
   );
 };

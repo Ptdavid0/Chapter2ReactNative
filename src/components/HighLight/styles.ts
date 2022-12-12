@@ -1,8 +1,7 @@
 import styled from "styled-components/native";
 
 export const Container = styled.View`
-  flex: 1;
-  margin: 32px 0;
+  margin: 32px 0 64px 0;
 `;
 
 export const Title = styled.Text`
