@@ -6,8 +6,10 @@ import ListEmpty from "@components/ListEmpty";
 import React from "react";
 import { FlatList } from "react-native";
 import { Container } from "./styles";
+import { useNavigation } from "@react-navigation/native";
 
 const Groups: React.FC = () => {
+  const navigation = useNavigation();
   const [groups, setGroups] = React.useState([
     {
       id: 1,
@@ -18,6 +20,11 @@ const Groups: React.FC = () => {
       title: "Turma 2",
     },
   ]);
+
+  const handleNewGroup = () => {
+    navigation.navigate("new");
+  };
+
   return (
     <Container>
       <Header />
@@ -40,7 +47,7 @@ const Groups: React.FC = () => {
           />
         )}
       />
-      <Button title="Criar nova turma" />
+      <Button title="Criar nova turma" onPress={handleNewGroup} />
     </Container>
   );
 };
