@@ -7,10 +7,12 @@ import { Container, Content, Icon } from "./styles";
 import { useNavigation } from "@react-navigation/native";
 
 const NewGroup: React.FC = () => {
+  const [group, setGroup] = React.useState<string>("");
+
   const { navigate } = useNavigation();
   const handleNewGroup = () => {
     navigate("players", {
-      group: "Rocket",
+      group,
     });
   };
   return (
@@ -24,7 +26,7 @@ const NewGroup: React.FC = () => {
           subtitle="Crie a turma para adicionar as pessoas"
         />
 
-        <Input placeholder="Nome da Turma" />
+        <Input placeholder="Nome da Turma" onChangeText={setGroup} />
 
         <Button
           title="Criar"
