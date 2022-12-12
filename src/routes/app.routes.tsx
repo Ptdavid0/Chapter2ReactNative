@@ -7,7 +7,11 @@ const { Navigator, Screen } = createNativeStackNavigator();
 
 const AppRoutes: React.FC = () => {
   return (
-    <Navigator>
+    <Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Screen name="groups" component={Groups} />
       <Screen name="new" component={NewGroup} />
       <Screen name="players" component={Players} />
