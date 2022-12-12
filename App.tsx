@@ -24,7 +24,7 @@ const App: React.FC = () => {
         backgroundColor="translucent"
         translucent
       />
-      {fontsLoaded ? <Players /> : <Loading />}
+      {fontsLoaded ? <Groups /> : <Loading />}
     </ThemeProvider>
   );
 };

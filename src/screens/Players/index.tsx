@@ -60,6 +60,7 @@ const Players: React.FC = () => {
         )}
         ListEmptyComponent={<ListEmpty message="Não há pessoas nesse time." />}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={[
           { paddingBottom: 100 },
           players.length === 0 && { flex: 1 },
