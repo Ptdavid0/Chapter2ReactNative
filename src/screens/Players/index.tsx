@@ -23,16 +23,7 @@ const Players: React.FC = () => {
     params: { group },
   } = useRoute() as RouteParams;
   const [team, setTeam] = React.useState<string>("Time A");
-  const [players, setPlayers] = React.useState<string[]>([
-    "João",
-    "Maria",
-    "José",
-    "Ana",
-    "Pedro",
-    "Paulo",
-    "Joaquim",
-    "Luna",
-  ]);
+  const [players, setPlayers] = React.useState<string[]>([]);
   return (
     <Container>
       <Header showBackButton />
