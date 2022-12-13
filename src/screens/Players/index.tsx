@@ -7,17 +7,18 @@ import Input from "@components/Input";
 import ListEmpty from "@components/ListEmpty";
 import PlayerCard from "@components/PlayerCard";
 import React from "react";
-import { Alert, FlatList } from "react-native";
-import { useFocusEffect, useRoute } from "@react-navigation/native";
+import { Alert, FlatList, TextInput } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 import { Container, Form, HeaderList, NumberOfPlayers } from "./styles";
-import { groupGetTeam } from "@storage/group/groupGetTeam";
 import { Group } from "@storage/group/groupCreate";
 import { AppError } from "@utils/AppError";
 import { playerAddByGroup } from "@storage/player/playerAddByGroup";
-import { playersGetByGroup } from "@storage/player/playersGetByGroup";
 import { playerGetByGroupAndTeam } from "@storage/player/playerGetByGroupAndTeam";
 import { PlayerStorageDTO } from "@storage/player/PlayerStorageDTO";
+import { playerRemoveByGroup } from "@storage/player/playerRemoveByGroup";
+import { groupRemoveById } from "@storage/group/groupRemoveById";
 
 type RouteParams = {
   params: {
@@ -32,14 +33,9 @@ const Players: React.FC = () => {
   const [team, setTeam] = React.useState<string>("");
   const [players, setPlayers] = React.useState<PlayerStorageDTO[]>([]);
   const [newPlayer, setNewPlayer] = React.useState<string>("");
+  const { navigate } = useNavigation();
 
-  const handleGetGroup = async () => {
-    try {
-      const currentGroup = await groupGetTeam(group.id);
-      const parsedGroup = JSON.parse(currentGroup);
-      setPlayers(parsedGroup[team]);
-    } catch (error) {}
-  };
+  const newPlayerInputRef = React.useRef<TextInput>(null);
 
   const handleAddPlayer = async () => {
     if (newPlayer.trim().length === 0) {
@@ -57,6 +53,7 @@ const Players: React.FC = () => {
     try {
       await playerAddByGroup(newPlayers, group.id);
       fetchPlayersByTeam();
+      newPlayerInputRef.current?.blur();
       setNewPlayer("");
     } catch (error) {
       if (error instanceof AppError) {
@@ -85,18 +82,38 @@ const Players: React.FC = () => {
     }
   };
 
-  React.useEffect(() => {
+  const handleRemovePlayer = async (playerId: string) => {
     try {
-      handleGetGroup();
+      await playerRemoveByGroup(group, playerId);
+      fetchPlayersByTeam();
     } catch (error) {
-      if (error instanceof AppError) {
-        Alert.alert("Erro", error.message);
-      } else {
-        Alert.alert("Erro", "Erro ao buscar turmas");
-        console.log(error);
-      }
+      Alert.alert("Remover Pessoa", "Erro ao remover pessoa");
+      console.log(error);
     }
-  }, []);
+  };
+
+  const fireRemovePlayerAlert = () => {
+    Alert.alert("Remover", "Deseja remover o grupo ?", [
+      {
+        text: "Não",
+        style: "cancel",
+      },
+      {
+        text: "Sim",
+        onPress: () => handleRemoveGroup(),
+      },
+    ]);
+  };
+
+  const handleRemoveGroup = async () => {
+    try {
+      await groupRemoveById(group.id);
+      navigate("groups");
+    } catch (error) {
+      Alert.alert("Remover Grupo", "Erro ao remover grupo");
+      console.log(error);
+    }
+  };
 
   React.useEffect(() => {
     fetchPlayersByTeam();
@@ -112,9 +129,14 @@ const Players: React.FC = () => {
       />
       <Form>
         <Input
+          inputRef={newPlayerInputRef}
           placeholder="Nome da Pessoa"
           autoCorrect={false}
           onChangeText={setNewPlayer}
+          value={newPlayer}
+          onSubmitEditing={handleAddPlayer}
+          // Change the keyboard type to "Send" when the user is typing the name
+          returnKeyType="send"
         />
         <ButtonIcon icon="add" onPress={handleAddPlayer} />
       </Form>
@@ -139,7 +161,10 @@ const Players: React.FC = () => {
         data={players}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <PlayerCard name={item.name} onRemove={() => {}} />
+          <PlayerCard
+            name={item.name}
+            onRemove={() => handleRemovePlayer(item.id)}
+          />
         )}
         ListEmptyComponent={<ListEmpty message="Não há pessoas nesse time." />}
         showsVerticalScrollIndicator={false}
@@ -149,7 +174,11 @@ const Players: React.FC = () => {
           players.length === 0 && { flex: 1 },
         ]}
       />
-      <Button title="Remover Turma" type="SECONDARY" />
+      <Button
+        title="Remover Turma"
+        type="SECONDARY"
+        onPress={fireRemovePlayerAlert}
+      />
     </Container>
   );
 };
