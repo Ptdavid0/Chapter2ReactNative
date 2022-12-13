@@ -3,27 +3,39 @@ import GroupCard from "@components/GroupCard";
 import Header from "@components/Header";
 import HighLight from "@components/HighLight";
 import ListEmpty from "@components/ListEmpty";
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FlatList } from "react-native";
 import { Container } from "./styles";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { groupGetAll } from "@storage/group/groupGetAll";
+import { Group } from "@storage/group/groupCreate";
 
 const Groups: React.FC = () => {
   const navigation = useNavigation();
-  const [groups, setGroups] = React.useState([
-    {
-      id: 1,
-      title: "Turma 1",
-    },
-    {
-      id: 2,
-      title: "Turma 2",
-    },
-  ]);
+  const [groups, setGroups] = useState<Group[]>([]);
 
   const handleNewGroup = () => {
     navigation.navigate("new");
   };
+
+  const fetchGroups = async () => {
+    try {
+      const groups = await groupGetAll();
+      const groupsParsed = groups.map((group) => {
+        return JSON.parse(group);
+      });
+      setGroups(groupsParsed);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Used to fetch groups when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchGroups();
+    }, [])
+  );
 
   return (
     <Container>
@@ -40,9 +52,9 @@ const Groups: React.FC = () => {
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <GroupCard
-            title={item.title}
+            title={item.name}
             onPress={() => {
-              alert("Clicou " + item.title);
+              alert("Clicou " + item.name);
             }}
           />
         )}

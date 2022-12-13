@@ -5,12 +5,18 @@ import Input from "@components/Input";
 import React from "react";
 import { Container, Content, Icon } from "./styles";
 import { useNavigation } from "@react-navigation/native";
+import { groupCreate } from "@storage/group/groupCreate";
 
 const NewGroup: React.FC = () => {
   const [group, setGroup] = React.useState<string>("");
 
   const { navigate } = useNavigation();
-  const handleNewGroup = () => {
+  const handleNewGroup = async () => {
+    if (!group) {
+      alert("Preencha o nome da turma");
+      return;
+    }
+    await groupCreate(group);
     navigate("players", {
       group,
     });
