@@ -9,9 +9,9 @@ type Props = TouchableOpacityProps & {
   type?: string;
 };
 
-const ButtonIcon: React.FC<Props> = ({ icon, type = "PRIMARY" }) => {
+const ButtonIcon: React.FC<Props> = ({ icon, type = "PRIMARY", ...rest }) => {
   return (
-    <Container>
+    <Container {...rest}>
       <Icon name={icon} type={type} />
     </Container>
   );

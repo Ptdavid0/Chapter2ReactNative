@@ -4,11 +4,12 @@ import Header from "@components/Header";
 import HighLight from "@components/HighLight";
 import ListEmpty from "@components/ListEmpty";
 import React, { useEffect, useState, useCallback } from "react";
-import { FlatList } from "react-native";
+import { Alert, FlatList } from "react-native";
 import { Container } from "./styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { groupGetAll } from "@storage/group/groupGetAll";
 import { Group } from "@storage/group/groupCreate";
+import { AppError } from "@utils/AppError";
 
 const Groups: React.FC = () => {
   const navigation = useNavigation();
@@ -26,7 +27,12 @@ const Groups: React.FC = () => {
       });
       setGroups(groupsParsed);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AppError) {
+        Alert.alert("Erro", error.message);
+      } else {
+        Alert.alert("Erro", "Erro ao buscar turmas");
+        console.log(error);
+      }
     }
   };
 
@@ -36,6 +42,13 @@ const Groups: React.FC = () => {
       fetchGroups();
     }, [])
   );
+
+  const handleOpenGroup = (group: Group) => {
+    const groupName = group.name;
+    navigation.navigate("players", {
+      group: groupName,
+    });
+  };
 
   return (
     <Container>
@@ -51,12 +64,7 @@ const Groups: React.FC = () => {
         contentContainerStyle={groups.length === 0 ? { flex: 1 } : {}}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <GroupCard
-            title={item.name}
-            onPress={() => {
-              alert("Clicou " + item.name);
-            }}
-          />
+          <GroupCard title={item.name} onPress={() => handleOpenGroup(item)} />
         )}
       />
       <Button title="Criar nova turma" onPress={handleNewGroup} />
