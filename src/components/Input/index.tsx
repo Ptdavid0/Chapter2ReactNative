@@ -1,13 +1,21 @@
 import React from "react";
-import { TextInputProps } from "react-native";
+import { TextInput, TextInputProps } from "react-native";
 import { useTheme } from "styled-components/native";
 
 import { Container } from "./styles";
 
-const Input: React.FC<TextInputProps> = ({ ...rest }) => {
+type Props = TextInputProps & {
+  inputRef?: React.RefObject<TextInput>;
+};
+
+const Input: React.FC<Props> = ({ inputRef, ...rest }) => {
   const { COLORS } = useTheme();
   return (
-    <Container {...rest} placeholderTextColor={COLORS.GRAY_300}></Container>
+    <Container
+      placeholderTextColor={COLORS.GRAY_300}
+      ref={inputRef}
+      {...rest}
+    ></Container>
   );
 };
 

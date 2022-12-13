@@ -5,8 +5,8 @@ import { AppError } from "@utils/AppError";
 import { groupGetAll } from "./groupGetAll";
 
 export interface Group {
-  name: string;
   id: string;
+  name: string;
 }
 
 export const groupCreate = async (groupName: string) => {

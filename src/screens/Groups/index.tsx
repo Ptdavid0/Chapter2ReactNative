@@ -3,7 +3,7 @@ import GroupCard from "@components/GroupCard";
 import Header from "@components/Header";
 import HighLight from "@components/HighLight";
 import ListEmpty from "@components/ListEmpty";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Alert, FlatList } from "react-native";
 import { Container } from "./styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -13,7 +13,7 @@ import { AppError } from "@utils/AppError";
 
 const Groups: React.FC = () => {
   const navigation = useNavigation();
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [groups, setGroups] = useState<Group[]>([] as Group[]);
 
   const handleNewGroup = () => {
     navigation.navigate("new");
@@ -22,8 +22,8 @@ const Groups: React.FC = () => {
   const fetchGroups = async () => {
     try {
       const groups = await groupGetAll();
-      const groupsParsed = groups.map((group) => {
-        return JSON.parse(group);
+      const groupsParsed: Group[] = groups.map((group) => {
+        return typeof group === "string" ? JSON.parse(group) : group;
       });
       setGroups(groupsParsed);
     } catch (error) {
@@ -44,9 +44,8 @@ const Groups: React.FC = () => {
   );
 
   const handleOpenGroup = (group: Group) => {
-    const groupName = group.name;
     navigation.navigate("players", {
-      group: groupName,
+      group,
     });
   };
 
