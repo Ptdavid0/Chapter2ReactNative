@@ -92,7 +92,7 @@ const Players: React.FC = () => {
     }
   };
 
-  const fireRemovePlayerAlert = () => {
+  const handleGroupRemove = () => {
     Alert.alert("Remover", "Deseja remover o grupo ?", [
       {
         text: "Não",
@@ -100,12 +100,12 @@ const Players: React.FC = () => {
       },
       {
         text: "Sim",
-        onPress: () => handleRemoveGroup(),
+        onPress: () => removeGroup(),
       },
     ]);
   };
 
-  const handleRemoveGroup = async () => {
+  const removeGroup = async () => {
     try {
       await groupRemoveById(group.id);
       navigate("groups");
@@ -177,7 +177,7 @@ const Players: React.FC = () => {
       <Button
         title="Remover Turma"
         type="SECONDARY"
-        onPress={fireRemovePlayerAlert}
+        onPress={handleGroupRemove}
       />
     </Container>
   );
