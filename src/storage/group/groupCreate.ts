@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GROUP_COLLECTION } from "@storage/storageConfig";
+import { AppError } from "@utils/AppError";
 import { groupGetAll } from "./groupGetAll";
 
 export interface Group {
@@ -19,6 +20,11 @@ export const groupCreate = async (groupName: string) => {
     // JSON.stringify() converts a JavaScript object or value to a JSON string
     const storedGroups = await groupGetAll();
 
+    const groupExists = storedGroups.toString().includes(newGroup.name);
+
+    if (groupExists) {
+      throw new AppError("Esse grupo já existe");
+    }
     const group = JSON.stringify(newGroup);
     const storage = JSON.stringify([...storedGroups, group]);
 

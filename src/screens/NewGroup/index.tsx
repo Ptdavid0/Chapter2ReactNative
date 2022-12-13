@@ -6,20 +6,32 @@ import React from "react";
 import { Container, Content, Icon } from "./styles";
 import { useNavigation } from "@react-navigation/native";
 import { groupCreate } from "@storage/group/groupCreate";
+import { AppError } from "@utils/AppError";
+import { Alert } from "react-native";
 
 const NewGroup: React.FC = () => {
   const [group, setGroup] = React.useState<string>("");
 
   const { navigate } = useNavigation();
+
   const handleNewGroup = async () => {
-    if (!group) {
-      alert("Preencha o nome da turma");
-      return;
+    try {
+      if (!group || group.trim().length === 0) {
+        Alert.alert("Novo Grupo", "Preencha o nome da turma");
+        return;
+      }
+      await groupCreate(group.trim());
+      navigate("players", {
+        group,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert("Erro", error.message);
+      } else {
+        Alert.alert("Erro", "Erro ao criar turma");
+        console.log(error);
+      }
     }
-    await groupCreate(group);
-    navigate("players", {
-      group,
-    });
   };
   return (
     <Container>

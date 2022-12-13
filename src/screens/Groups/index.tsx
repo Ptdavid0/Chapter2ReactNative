@@ -4,11 +4,12 @@ import Header from "@components/Header";
 import HighLight from "@components/HighLight";
 import ListEmpty from "@components/ListEmpty";
 import React, { useEffect, useState, useCallback } from "react";
-import { FlatList } from "react-native";
+import { Alert, FlatList } from "react-native";
 import { Container } from "./styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { groupGetAll } from "@storage/group/groupGetAll";
 import { Group } from "@storage/group/groupCreate";
+import { AppError } from "@utils/AppError";
 
 const Groups: React.FC = () => {
   const navigation = useNavigation();
@@ -26,7 +27,12 @@ const Groups: React.FC = () => {
       });
       setGroups(groupsParsed);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AppError) {
+        Alert.alert("Erro", error.message);
+      } else {
+        Alert.alert("Erro", "Erro ao buscar turmas");
+        console.log(error);
+      }
     }
   };
 
