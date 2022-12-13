@@ -43,6 +43,13 @@ const Groups: React.FC = () => {
     }, [])
   );
 
+  const handleOpenGroup = (group: Group) => {
+    const groupName = group.name;
+    navigation.navigate("players", {
+      group: groupName,
+    });
+  };
+
   return (
     <Container>
       <Header />
@@ -57,12 +64,7 @@ const Groups: React.FC = () => {
         contentContainerStyle={groups.length === 0 ? { flex: 1 } : {}}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <GroupCard
-            title={item.name}
-            onPress={() => {
-              alert("Clicou " + item.name);
-            }}
-          />
+          <GroupCard title={item.name} onPress={() => handleOpenGroup(item)} />
         )}
       />
       <Button title="Criar nova turma" onPress={handleNewGroup} />

@@ -7,14 +7,21 @@ import Input from "@components/Input";
 import ListEmpty from "@components/ListEmpty";
 import PlayerCard from "@components/PlayerCard";
 import React from "react";
-import { FlatList } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { Alert, FlatList } from "react-native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 
 import { Container, Form, HeaderList, NumberOfPlayers } from "./styles";
+import { groupGetTeam } from "@storage/group/groupGetTeam";
+import { Group } from "@storage/group/groupCreate";
+import { AppError } from "@utils/AppError";
+import { playerAddByGroup } from "@storage/player/playerAddByGroup";
+import { playersGetByGroup } from "@storage/player/playersGetByGroup";
+import { playerGetByGroupAndTeam } from "@storage/player/playerGetByGroupAndTeam";
+import { PlayerStorageDTO } from "@storage/player/PlayerStorageDTO";
 
 type RouteParams = {
   params: {
-    group: string;
+    group: Group;
   };
 };
 
@@ -22,16 +29,94 @@ const Players: React.FC = () => {
   const {
     params: { group },
   } = useRoute() as RouteParams;
-  const [team, setTeam] = React.useState<string>("Time A");
-  const [players, setPlayers] = React.useState<string[]>([]);
+  const [team, setTeam] = React.useState<string>("");
+  const [players, setPlayers] = React.useState<PlayerStorageDTO[]>([]);
+  const [newPlayer, setNewPlayer] = React.useState<string>("");
+
+  const handleGetGroup = async () => {
+    try {
+      const currentGroup = await groupGetTeam(group.id);
+      const parsedGroup = JSON.parse(currentGroup);
+      setPlayers(parsedGroup[team]);
+    } catch (error) {}
+  };
+
+  const handleAddPlayer = async () => {
+    if (newPlayer.trim().length === 0) {
+      return Alert.alert("Nova Pessoa", "Digite o nome da pessoa");
+    } else if (team.trim().length === 0) {
+      return Alert.alert("Time", "Selecione um time");
+    }
+
+    const newPlayers = {
+      name: newPlayer,
+      id: Math.random().toString(36).slice(2, 9),
+      team,
+    };
+
+    try {
+      await playerAddByGroup(newPlayers, group.id);
+      fetchPlayersByTeam();
+      setNewPlayer("");
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert("Erro", error.message);
+      } else {
+        Alert.alert("Erro", "Erro ao adicionar pessoa");
+        console.log(error);
+      }
+    }
+  };
+
+  const fetchPlayersByTeam = async () => {
+    try {
+      const playersByTeam = await playerGetByGroupAndTeam(group.id, team);
+      if (!playersByTeam) {
+        return Alert.alert("Time", "Não há pessoas nesse time");
+      }
+      setPlayers(playersByTeam);
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert("Erro", error.message);
+      } else {
+        Alert.alert("Erro", "Erro ao buscar pessoas");
+        console.log(error);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    try {
+      handleGetGroup();
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert("Erro", error.message);
+      } else {
+        Alert.alert("Erro", "Erro ao buscar turmas");
+        console.log(error);
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchPlayersByTeam();
+  }, [group, team]);
+
   return (
     <Container>
       <Header showBackButton />
 
-      <HighLight title={group} subtitle="Adicione a galera e separe os times" />
+      <HighLight
+        title={group.name}
+        subtitle="Adicione a galera e separe os times"
+      />
       <Form>
-        <Input placeholder="Nome da Pessoa" autoCorrect={false} />
-        <ButtonIcon icon="add" />
+        <Input
+          placeholder="Nome da Pessoa"
+          autoCorrect={false}
+          onChangeText={setNewPlayer}
+        />
+        <ButtonIcon icon="add" onPress={handleAddPlayer} />
       </Form>
 
       <HeaderList>
@@ -52,9 +137,9 @@ const Players: React.FC = () => {
 
       <FlatList
         data={players}
-        keyExtractor={(item) => String(item)}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <PlayerCard name={item} onRemove={() => {}} />
+          <PlayerCard name={item.name} onRemove={() => {}} />
         )}
         ListEmptyComponent={<ListEmpty message="Não há pessoas nesse time." />}
         showsVerticalScrollIndicator={false}
