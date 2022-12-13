@@ -30,7 +30,7 @@ const Players: React.FC = () => {
   const {
     params: { group },
   } = useRoute() as RouteParams;
-  const [team, setTeam] = React.useState<string>("");
+  const [team, setTeam] = React.useState<string>("Time A");
   const [players, setPlayers] = React.useState<PlayerStorageDTO[]>([]);
   const [newPlayer, setNewPlayer] = React.useState<string>("");
   const { navigate } = useNavigation();
@@ -175,7 +175,7 @@ const Players: React.FC = () => {
         ]}
       />
       <Button
-        title="Remover Turma"
+        title="Remover turma"
         type="SECONDARY"
         onPress={handleGroupRemove}
       />
